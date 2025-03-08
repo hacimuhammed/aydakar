@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-
     strategy:
       matrix:
         node-version: [18.19.1]
@@ -21,4 +20,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
+      - run: npx next telemetry disable
       - run: npm run build --if-present
+      - name: Change Directory
+        run: cd /actions-runner/_work/aydakar/aydakar
+      - run: pm2 restart 7
