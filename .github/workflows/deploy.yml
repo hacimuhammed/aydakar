@@ -17,8 +17,17 @@ jobs:
       - name: Notify Discord - Starting Build
         run: |
           curl -H "Content-Type: application/json" -X POST \
-          -d '{"content": "🚀 **Aydakar CI** başladı!"}' \
-          "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          -d '{
+            "embeds": [{
+              "title": "🚀 Aydakar CI Başladı!",
+              "color": 15258703,
+              "fields": [
+                { "name": "👤 Kullanıcı", "value": "${{ github.actor }}", "inline": true },
+                { "name": "🔗 Commit ID", "value": "`${{ github.sha }}`", "inline": true }
+              ],
+              "thumbnail": { "url": "https://github.com/${{ github.actor }}.png" }
+            }]
+          }' "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -29,14 +38,14 @@ jobs:
       - name: Notify Discord - Dependencies Installed
         run: |
           curl -H "Content-Type: application/json" -X POST \
-          -d '{"content": "📦 **npm ci** tamamlandı!"}' \
+          -d '{"content": "`${{ github.sha }}`\n📦 **npm ci** tamamlandı!"}' \
           "${{ secrets.DISCORD_WEBHOOK_URL }}"
       - run: npx next telemetry disable
       - run: npm run build --if-present
       - name: Notify Discord - Build Completed
         run: |
           curl -H "Content-Type: application/json" -X POST \
-          -d '{"content": "✅ **Build işlemi tamamlandı!**"}' \
+          -d '{"content": "`${{ github.sha }}`\n✅ **Build işlemi tamamlandı!**"}' \
           "${{ secrets.DISCORD_WEBHOOK_URL }}"
       - name: PM2 List
         run: pm2 list
@@ -46,5 +55,5 @@ jobs:
       - name: Notify Discord - PM2 Restarted
         run: |
           curl -H "Content-Type: application/json" -X POST \
-          -d '{"content": "♻️ **PM2 restart edildi!**"}' \
+          -d '{"content": "`${{ github.sha }}`\n♻️ **PM2 restart edildi!**"}' \
           "${{ secrets.DISCORD_WEBHOOK_URL }}"
