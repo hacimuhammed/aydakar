@@ -1,9 +1,16 @@
+import { admin, multiSession } from "better-auth/plugins";
+
+import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@prisma/client";
-import { admin, multiSession } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+
 const prisma = new PrismaClient();
+
+// Determine if we're in production or development environment
+const isProd = process.env.NODE_ENV === "production";
+const baseUrl = isProd ? "https://mipple.net" : "http://localhost:3000";
+
 export const auth = betterAuth({
   plugins: [
     admin(),
@@ -19,9 +26,9 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "sqlite",
   }),
-  baseURL: "http://localhost:3000",
+  baseURL: baseUrl,
   appName: "Aydakar",
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: [baseUrl],
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
