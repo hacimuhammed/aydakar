@@ -29,19 +29,21 @@ jobs:
             }]
           }' "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
-      - name: Setup Bun ${{ matrix.bun-version }}
-      - uses: oven-sh/setup-bun@v2
-
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.0
-      - run: bun install
+      - name: Install dependencies
+        run: bun install
       - name: Notify Discord - Dependencies Installed
         run: |
           curl -H "Content-Type: application/json" -X POST \
           -d '{"content": "`${{ github.sha }}`\n📦 **bun install** tamamlandı!"}' \
           "${{ secrets.DISCORD_WEBHOOK_URL }}"
-      - run: bunx --bun next telemetry disable
-      - run: bun run build
+      - name: Disable Next.js telemetry
+        run: bunx --bun next telemetry disable
+      - name: Build application
+        run: bun run build
       - name: Notify Discord - Build Completed
         run: |
           curl -H "Content-Type: application/json" -X POST \
@@ -51,7 +53,8 @@ jobs:
         run: pm2 list
       - name: Change Directory
         run: cd /actions-runner/_work/aydakar/aydakar
-      - run: pm2 restart aydakar
+      - name: Restart application
+        run: pm2 restart aydakar
       - name: Notify Discord - PM2 Restarted
         run: |
           curl -H "Content-Type: application/json" -X POST \
