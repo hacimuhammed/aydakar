@@ -30,9 +30,10 @@ jobs:
           }' "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
       - name: Setup Bun ${{ matrix.bun-version }}
-        uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
+
         with:
-          bun-version: ${{ matrix.bun-version }}
+          bun-version: 1.2.0
       - run: bun install
       - name: Notify Discord - Dependencies Installed
         run: |
