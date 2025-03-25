@@ -1,16 +1,29 @@
-// @ts-nocheck
 /* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 export const revalidate = 0;
 
 import { services } from "@/dal/services";
 import { ImageResponse } from "next/og";
+
+// Helper function to convert ArrayBuffer to base64 string
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return `data:image/png;base64,${btoa(binary)}`;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug");
-  const noImageUrl = await fetch(
+
+  // Fetch the image and convert to base64
+  const noImageBuffer = await fetch(
     new URL("/illustrations/no-image.png", request.url)
   ).then((res) => res.arrayBuffer());
+  const noImageUrl = arrayBufferToBase64(noImageBuffer);
+
   if (!slug) {
     return new ImageResponse(
       (
@@ -39,7 +52,6 @@ export async function GET(request: Request) {
     );
   }
   const title = page.title;
-
   return new ImageResponse(
     (
       <div tw="flex flex-col items-center justify-start w-full h-full relative">

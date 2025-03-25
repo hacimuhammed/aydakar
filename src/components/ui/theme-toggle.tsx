@@ -1,18 +1,16 @@
 "use client";
 
-import * as React from "react";
-import { Moon, MoonIcon, Sun } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useState } from "react";
 import { getCookie, setCookie } from "cookies-next";
+import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 export default function ModeToggle() {
   const [theme, setTheme] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
@@ -22,22 +20,18 @@ export default function ModeToggle() {
     }
     return null;
   });
-
   useEffect(() => {
     if (!theme) return;
-
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
     root.style.colorScheme = theme;
-
     // Her iki depolama alanına da kaydet
     localStorage.setItem("theme", theme);
     setCookie("theme", theme, {
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
     });
   }, [theme]);
-
   useEffect(() => {
     // İlk render'da localStorage'da tema yoksa sistem temasını kontrol et
     if (!theme) {
@@ -46,8 +40,7 @@ export default function ModeToggle() {
       ).matches;
       setTheme(isDarkMode ? "dark" : "light");
     }
-  }, []);
-
+  }, [theme]);
   const handleThemeChange = (newTheme: string) => {
     if (newTheme === "system") {
       const isDarkMode = window.matchMedia(
@@ -67,7 +60,6 @@ export default function ModeToggle() {
       });
     }
   };
-
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>

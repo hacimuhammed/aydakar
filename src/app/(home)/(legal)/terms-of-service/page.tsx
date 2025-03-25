@@ -1,5 +1,3 @@
-import React from "react";
-
 export async function generateMetadata() {
   return {
     title: "Kullanım Sözleşmesi",
@@ -45,8 +43,8 @@ const TermsOfService = () => {
       <div className="flex flex-col gap-4 mt-8">
         <h2 className="text-lg font-bold">Sorumluluk Reddi</h2>
         <p className="text-sm text-gray-500">
-          Hizmet "olduğu gibi" sunulmaktadır. Teknik aksaklıklar veya veri
-          kayıplarından dolayı sorumluluk kabul edilmez.
+          Hizmet &ldquo;olduğu gibi&rdquo; sunulmaktadır. Teknik aksaklıklar
+          veya veri kayıplarından dolayı sorumluluk kabul edilmez.
         </p>
       </div>
     </div>

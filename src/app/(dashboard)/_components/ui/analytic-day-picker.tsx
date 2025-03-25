@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,14 +8,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 export const AnalyticDayPicker = ({ currentDay }: { currentDay: number }) => {
   const router = useRouter();
   const [selectedDay, setSelectedDay] = useState(currentDay);
-
   useEffect(() => {
     router.replace(`/dashboard/analytics/${selectedDay}`);
-  }, [selectedDay]);
-
+  }, [selectedDay, router]);
   return (
     <div className="flex items-center gap-2">
       <DropdownMenu>

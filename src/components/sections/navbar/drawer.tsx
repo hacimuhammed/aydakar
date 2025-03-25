@@ -1,25 +1,24 @@
-import { Button } from "@/components/ui/button";
-import React from "react";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import Link from "next/link";
-import Aydakar from "@/components/logos/aydakar";
-import { Menu } from "lucide-react";
-import { GetNavbarCategoriesWithPages } from "@/dal/dynamic-page-category/dynamic-page-category";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import Aydakar from "@/components/logos/aydakar";
+import { Button } from "@/components/ui/button";
+import { GetNavbarCategoriesWithPages } from "@/dal/dynamic-page-category/dynamic-page-category";
+import { Menu } from "lucide-react";
+import Link from "next/link";
+
 const NavbarDrawer = ({
   dynamicPagesWithCategories,
 }: {
@@ -41,13 +40,15 @@ const NavbarDrawer = ({
           </DrawerTitle>
           <div className="flex flex-col gap-4">
             {dynamicPagesWithCategories.map((category) => (
-              <DropdownMenu>
+              <DropdownMenu key={category.id}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">{category.name}</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {category.pages.map((page) => (
-                    <DropdownMenuItem>{page.title}</DropdownMenuItem>
+                    <DropdownMenuItem key={page.id}>
+                      {page.title}
+                    </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -68,5 +69,4 @@ const NavbarDrawer = ({
     </Drawer>
   );
 };
-
 export default NavbarDrawer;
