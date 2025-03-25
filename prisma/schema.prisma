@@ -1,0 +1,192 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//--- BEGIN: BetterAuth Models---
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+
+  @@unique([email])
+  @@map("user")
+  DynamicPage DynamicPage[]
+}
+
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+//--- END: BetterAuth Models---
+
+//--- BEGIN: Analytics Models---
+model Tracking {
+  trackingId String     @id @unique
+  ip         String?
+  userAgent  String?
+  isBot      Boolean
+  createdAt  DateTime
+  lastSeen   DateTime
+  pageViews  PageView[]
+  events     Event[]
+
+  UserAgent UserAgent[]
+
+  Bot Bot[]
+}
+
+model PageView {
+  id         String   @id @default(uuid())
+  trackingId String
+  tracking   Tracking @relation(fields: [trackingId], references: [trackingId])
+  path       String
+  referrer   String?
+  createdAt  DateTime
+}
+
+model Event {
+  id         String   @id @default(uuid())
+  trackingId String
+  tracking   Tracking @relation(fields: [trackingId], references: [trackingId])
+  eventName  String
+  eventData  Json?
+  createdAt  DateTime
+}
+
+model UserAgent {
+  id             String  @id @default(uuid())
+  clientType     String @default("unknown")
+  clientName     String @default("unknown")
+  clientVersion  String @default("unknown")
+
+  osName       String @default("unknown")
+  osVersion    String @default("unknown")
+  osPlatform   String @default("unknown")
+
+  deviceType     String @default("unknown")
+  deviceBrand    String @default("unknown")
+  deviceModel    String @default("unknown")
+
+  trackingId     String
+  tracking       Tracking @relation(fields: [trackingId], references: [trackingId])
+}
+
+model Bot {
+  id             String  @id @default(uuid())
+  name           String
+  category       String
+  producerName   String
+  producerUrl    String
+  producerIcon   String?
+  trackingId     String
+  tracking       Tracking @relation(fields: [trackingId], references: [trackingId])
+}
+
+//--- END: Analytics Models---
+
+//--- BEGIN: DynamicPage Models---
+model DynamicPage {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  published   Boolean  @default(false)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  categoryId  String?  
+  category    Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id            String                 @id @default(uuid())
+  type          CategoryType           @default(CUSTOM) 
+  name          String                 @unique
+  slug          String                 @unique
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  parentId      String?                 
+  active        Boolean                @default(true)
+  searchable      Boolean              @default(false)
+  isSinglePage    Boolean              @default(false)
+  order           Int                  @default(0)
+  isFeatured      Boolean              @default(false)
+  parent        Category?   @relation("CategoryParent", fields: [parentId], references: [id])
+  subcategories Category[]  @relation("CategoryParent")
+  pages         DynamicPage[]
+}
+
+enum CategoryType {
+  CONTACT     // İletişim (Tek sayfa)
+  PRODUCT     // Ürün kategorisi
+  BLOG        // Blog yazıları
+  SERVICE     // Hizmetler
+  LEGAL       // Yasal belgeler
+  CUSTOM      // Özel kullanım
+}
+
+//--- END: DynamicPage Models---
+
